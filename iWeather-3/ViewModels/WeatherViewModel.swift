@@ -8,6 +8,7 @@ class WeatherViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var weatherData: WeatherData?
     @Published var isLoading = false
     @Published var errorMessage: String?
+    @Published var showLocationDeniedAlert = false
     
     private let weatherService = WeatherServiceManager()
     private let locationManager = CLLocationManager()
@@ -24,17 +25,29 @@ class WeatherViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         let status = manager.authorizationStatus
         if status == .denied || status == .restricted {
             Task { @MainActor in
-                self.errorMessage = "Location access was denied. Please enable permissions in Settings or enter a city manually."
+                self.showLocationDeniedAlert = true
             }
         } else if status == .authorizedWhenInUse || status == .authorizedAlways {
             manager.requestLocation()  // now safe to request location
         }
     }
 
-    
-    func requestLocation() {
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.requestLocation()
+    func requestLocation() async {
+        let status = locationManager.authorizationStatus
+        
+        switch status {
+        case .notDetermined:
+            locationManager.requestWhenInUseAuthorization()
+            
+        case .denied, .restricted:
+            showLocationDeniedAlert = true
+            
+        case .authorizedWhenInUse, .authorizedAlways:
+            locationManager.requestLocation()
+            
+        @unknown default:
+            break
+        }
     }
 
     // Called when location is updated
@@ -81,5 +94,4 @@ class WeatherViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
         isLoading = false
     }
-
 }

@@ -70,7 +70,9 @@ struct HomeView: View {
                         .disabled(manualCity.isEmpty)
                         
                         Button(action: {
-                            viewModel.requestLocation()
+                            Task {
+                                await viewModel.requestLocation()
+                            }
                         }) {
                             Label("Use My Location", systemImage: "location.circle.fill")
                                 .font(.headline)

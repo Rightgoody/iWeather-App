@@ -73,7 +73,9 @@ struct SavedCitiesView: View {
                             .padding(.horizontal)
                             
                             Button(action: {
-                                viewModel.requestLocation()
+                                Task {
+                                    await viewModel.requestLocation()
+                                }
                             }) {
                                 HStack {
                                     Image(systemName: "location.circle.fill")
@@ -124,6 +126,16 @@ struct SavedCitiesView: View {
                             .foregroundColor(.primary)
                     }
                 }
+            }
+            .alert("Location Access Required", isPresented: $viewModel.showLocationDeniedAlert) {
+                Button("Cancel", role: .cancel) { }
+                Button("Settings") {
+                    if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(settingsURL)
+                    }
+                }
+            } message: {
+                Text("Location permission is denied. Please enable it in Settings.")
             }
         }
     }
