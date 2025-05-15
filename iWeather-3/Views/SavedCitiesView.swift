@@ -126,7 +126,7 @@ struct SavedCitiesView: View {
                 }
             }
             .padding(.vertical)
-            .navigationTitle("Saved Cities")
+            .navigationTitle("Home")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
