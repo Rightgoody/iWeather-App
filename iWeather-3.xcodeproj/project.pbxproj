@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		E252DC982DD5AC9600926416 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E252DC882DD5AC9600926416 /* HomeView.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		7A872F9C2DD5957300D04E94 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		7A872F892DD5956E00D04E94 /* iWeather-3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iWeather-3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A872F9B2DD5957300D04E94 /* iWeather-3Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "iWeather-3Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A872FA52DD5957300D04E94 /* iWeather-3UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "iWeather-3UITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E252DC882DD5AC9600926416 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +80,7 @@
 		7A872F802DD5956E00D04E94 = {
 			isa = PBXGroup;
 			children = (
+				E252DC882DD5AC9600926416 /* HomeView.swift */,
 				7A872F8B2DD5956E00D04E94 /* iWeather-3 */,
 				7A872F9E2DD5957300D04E94 /* iWeather-3Tests */,
 				7A872FA82DD5957300D04E94 /* iWeather-3UITests */,
@@ -236,6 +242,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E252DC982DD5AC9600926416 /* HomeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

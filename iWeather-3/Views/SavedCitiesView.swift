@@ -11,110 +11,122 @@ struct SavedCitiesView: View {
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
+            VStack(spacing: 24) {
+                // Search Section (Always Visible)
+                VStack(spacing: 16) {
+                    TextField("Enter city name", text: $manualCity)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .padding(.horizontal)
+                    
+                    Button(action: {
+                        Task {
+                            let searchCity = manualCity.trimmingCharacters(in: .whitespacesAndNewlines)
+                            await viewModel.fetchWeather(for: searchCity)
+                            // Only clear if the search was successful and matches
+                            if let weather = viewModel.weatherData,
+                               weather.city.lowercased() == searchCity.lowercased() {
+                                manualCity = ""
+                            }
+                        }
+                    }) {
+                        Text("Search")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .foregroundColor(.primary)
+                            .cornerRadius(12)
+                    }
+                    .disabled(manualCity.isEmpty)
+                    .padding(.horizontal)
+                    
+                    Button(action: {
+                        Task {
+                            await viewModel.requestLocation()
+                        }
+                    }) {
+                        HStack {
+                            Image(systemName: "location.circle.fill")
+                            Text("Use My Location")
+                        }
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color(.systemBlue).opacity(0.2))
+                        .foregroundColor(.blue)
+                        .cornerRadius(12)
+                    }
+                    .padding(.horizontal)
+                }
+                
                 // Current Weather Section
-                VStack(spacing: 24) {
-                    if viewModel.isLoading {
-                        ProgressView("Loading weather...")
-                    } else if let weather = viewModel.weatherData {
-                        // Weather data view
-                        VStack(spacing: 10) {
+                if viewModel.isLoading {
+                    ProgressView("Loading weather...")
+                } else if let weather = viewModel.weatherData {
+                    VStack(spacing: 8) {
+                        VStack(spacing: 8) {
                             Text(weather.city)
-                                .font(.largeTitle)
+                                .font(.headline)
                                 .bold()
                             Text("\(formatTemperature(weather.temperature))°")
-                                .font(.system(size: 64))
+                                .font(.system(size: 36))
                             Text(weather.condition)
-                                .font(.title2)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
                             if let iconURL = URL(string: "https://openweathermap.org/img/wn/\(weather.icon)@2x.png") {
                                 AsyncImage(url: iconURL) { image in
                                     image.resizable()
                                          .scaledToFit()
-                                         .frame(width: 80, height: 80)
+                                         .frame(width: 50, height: 50)
                                 } placeholder: {
                                     ProgressView()
                                 }
                             }
                         }
-                    } else {
-                        // No data view
-                        VStack(spacing: 16) {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                                .font(.system(size: 40))
-                                .foregroundColor(.orange)
-                            
-                            VStack(spacing: 8) {
-                                Text("No weather data available")
-                                    .font(.title3)
-                                    .bold()
-                                Text("Try entering a city or use your location")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            TextField("Enter city name", text: $manualCity)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .padding(.horizontal)
-                            
-                            Button(action: {
-                                Task {
-                                    await viewModel.fetchWeather(for: manualCity)
-                                }
-                            }) {
-                                Text("Search")
-                                    .font(.headline)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color(.systemGray6))
-                                    .foregroundColor(.primary)
-                                    .cornerRadius(12)
-                            }
-                            .disabled(manualCity.isEmpty)
-                            .padding(.horizontal)
-                            
-                            Button(action: {
-                                Task {
-                                    await viewModel.requestLocation()
-                                }
-                            }) {
-                                HStack {
-                                    Image(systemName: "location.circle.fill")
-                                    Text("Use My Location")
-                                }
-                                .font(.headline)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color(.systemBlue).opacity(0.2))
-                                .foregroundColor(.blue)
-                                .cornerRadius(12)
-                            }
-                            .padding(.horizontal)
+                        .padding(12)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                        .shadow(color: Color.primary.opacity(0.1), radius: 2, x: 0, y: 1)
+                    }
+                } else {
+                    // No data warning
+                    VStack(spacing: 16) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(.orange)
+                        
+                        VStack(spacing: 8) {
+                            Text("No weather data available")
+                                .font(.title3)
+                                .bold()
+                            Text("Enter a city name or use your location")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
                         }
                     }
-                    
-                    if let error = viewModel.errorMessage {
-                        Text(error)
-                            .foregroundColor(.red)
-                            .multilineTextAlignment(.center)
-                    }
+                    .padding()
+                    .background(Color(.systemBackground))
+                    .cornerRadius(16)
                 }
-                .padding()
-                .background(Color(.systemBackground))
                 
-                Divider()
+                if let error = viewModel.errorMessage {
+                    Text(error)
+                        .foregroundColor(.red)
+                        .multilineTextAlignment(.center)
+                }
                 
                 // Saved Cities Section
                 ScrollView {
-                    VStack(spacing: 16) {
+                    LazyVStack(spacing: 16) {
                         ForEach(cities) { city in
                             SavedCityCard(city: city, useCelsius: useCelsius)
                         }
                     }
-                    .padding()
+                    .padding(.horizontal)
                 }
-                .background(Color(.systemGroupedBackground))
             }
-            .navigationTitle("iWeather")
+            .padding(.vertical)
+            .navigationTitle("Saved Cities")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
