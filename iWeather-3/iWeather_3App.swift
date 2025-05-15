@@ -1,20 +1,17 @@
 //
-//  iWeather_3App.swift
-//  iWeather-3
+//  iWeatherApp.swift
+//  iWeather
 //
-//  Created by meow on 5/14/25.
+//  Created by Brianna Lopez on 5/12/25.
 //
 
 import SwiftUI
 
 @main
-struct iWeather_3App: App {
-    let persistenceController = PersistenceController.shared
-
+struct iWeatherApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            MainTabView()
         }
     }
 }

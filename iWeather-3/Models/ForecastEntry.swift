@@ -1,7 +1,9 @@
-//
-//  ForecastEntry.swift
-//  iWeather-3
-//
-//  Created by meow on 5/14/25.
-//
+import Foundation
 
+struct ForecastEntry: Identifiable {
+    let id = UUID()
+    let date: Date
+    let temperature: Double
+    let condition: String
+    let icon: String
+}
