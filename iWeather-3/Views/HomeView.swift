@@ -3,6 +3,7 @@ import CoreLocation
 
 /// Main view displaying current weather information
 struct HomeView: View {
+    @StateObject private var locationManager = LocationManager()
     @StateObject private var viewModel = WeatherViewModel()
     @State private var manualCity = ""
     @AppStorage("isDarkMode") private var isDarkMode = false

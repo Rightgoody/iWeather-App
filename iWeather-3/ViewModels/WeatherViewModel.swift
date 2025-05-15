@@ -19,6 +19,19 @@ class WeatherViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     // MARK: - Location Permission
 
+    // Inside WeatherViewModel, as it conforms to CLLocationManagerDelegate
+    nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        let status = manager.authorizationStatus
+        if status == .denied || status == .restricted {
+            Task { @MainActor in
+                self.errorMessage = "Location access was denied. Please enable permissions in Settings or enter a city manually."
+            }
+        } else if status == .authorizedWhenInUse || status == .authorizedAlways {
+            manager.requestLocation()  // now safe to request location
+        }
+    }
+
+    
     func requestLocation() {
         locationManager.requestWhenInUseAuthorization()
         locationManager.requestLocation()
@@ -56,9 +69,17 @@ class WeatherViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         isLoading = true
         do {
             weatherData = try await weatherService.fetchWeather(for: city)
+            errorMessage = nil  // clear any previous error
+        } catch let urlError as URLError {
+            if urlError.code == .badServerResponse {
+                errorMessage = "City not found. Please try another city."
+            } else {
+                errorMessage = "Network error: \(urlError.localizedDescription)"
+            }
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = "Failed to get weather: \(error.localizedDescription)"
         }
         isLoading = false
     }
+
 }
